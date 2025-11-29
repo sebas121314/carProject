@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Car Evaluation - Predicción</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>Car Evaluation</h1>
+      <p>Ingrese las características del auto para predecir su aceptabilidad.</p>
+    </header>
+
+    <section class="form-card">
+      <form id="predict-form">
+        {% for feature, options in choices.items() %}
+        <label for="{{ feature }}">{{ feature | capitalize }}</label>
+        <select id="{{ feature }}" name="{{ feature }}" required>
+          {% for option in options %}
+          <option value="{{ option }}">{{ option }}</option>
+          {% endfor %}
+        </select>
+        {% endfor %}
+        <button type="submit">Predecir</button>
+      </form>
+      <div id="result" class="result" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <script>
+    const form = document.getElementById('predict-form');
+    const resultBox = document.getElementById('result');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      resultBox.textContent = 'Calculando...';
+      const formData = new FormData(form);
+      const payload = Object.fromEntries(formData.entries());
+
+      try {
+        const resp = await fetch('/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await resp.json();
+        if (!resp.ok) {
+          throw new Error(data.error || 'Error inesperado');
+        }
+        resultBox.textContent = `Predicción: ${data.prediction}`;
+        resultBox.className = 'result ok';
+      } catch (err) {
+        resultBox.textContent = `Error: ${err.message}`;
+        resultBox.className = 'result error';
+      }
+    });
+  </script>
+</body>
+</html>
