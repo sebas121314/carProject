@@ -1,6 +1,6 @@
-# Car Evaluation - Despliegue (Sprint 4)
+# Evaluación de Vehículos - Despliegue (Sprint 4)
 
-App Flask que sirve el modelo entrenado del dataset Car Evaluation (UCI) y expone un endpoint de predicción con UI web.
+Aplicación Flask que sirve el modelo entrenado del dataset Car Evaluation (UCI) y expone un endpoint de predicción junto con una UI web.
 
 ## Estructura
 - `app.py`: API + UI.
@@ -18,14 +18,14 @@ python app.py
 Abre `http://localhost:5000` y usa el formulario o prueba con Thunder Client / Postman.
 
 ## API
-- `GET /` → UI.
-- `POST /predict` → JSON o form-data con las 6 features:
-  - `buying`: vhigh|high|med|low
-  - `maint`: vhigh|high|med|low
-  - `doors`: 2|3|4|5more
-  - `persons`: 2|4|more
-  - `lug_boot`: small|med|big
-  - `safety`: low|med|high
+- `GET /`: UI.
+- `POST /predict`: JSON o form-data con las 6 features del dataset (los valores siguen el dataset original en inglés):
+  - `buying`: vhigh | high | med | low (precio de compra: muy alto, alto, medio, bajo)
+  - `maint`: vhigh | high | med | low (costo de mantenimiento)
+  - `doors`: 2 | 3 | 4 | 5more
+  - `persons`: 2 | 4 | more
+  - `lug_boot`: small | med | big (tamaño de cajuela)
+  - `safety`: low | med | high
 
 Ejemplo body:
 ```json
@@ -36,6 +36,14 @@ Ejemplo body:
   "persons": "4",
   "lug_boot": "big",
   "safety": "high"
+}
+```
+
+Respuesta:
+```json
+{
+  "prediction": "Aceptable",
+  "prediction_code": "acc"
 }
 ```
 
