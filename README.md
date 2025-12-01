@@ -1,33 +1,30 @@
-# Evaluación de Vehículos - Despliegue (Sprint 4)
+# Evaluación de Vehículos - Guía rápida
 
-Aplicación Flask que sirve el modelo entrenado del dataset Car Evaluation (UCI) y expone un endpoint de predicción junto con una UI web.
+Aplicación Flask que carga un modelo entrenado (dataset UCI Car Evaluation) y permite predecir la aceptabilidad de un auto vía formulario web o endpoint `/predict`.
 
-## Estructura
-- `app.py`: API + UI.
-- `templates/index.html`: formulario web.
-- `static/styles.css`: estilos.
-- `car+evaluation/`: datos y modelo (`best_car_model_sprint3.pkl` preferido; `best_car_model.pkl` como respaldo).
-- `sprint2_preparacion.ipynb`, `sprint3_modelamiento.ipynb`: notebooks de preparación y modelamiento.
-- `requirements.txt`: dependencias.
+## Cómo funciona
+- El modelo se busca en `car+evaluation/` (`best_car_model_sprint3.pkl` preferido, `best_car_model.pkl` de respaldo).
+- El pipeline recibe 6 características categóricas: `buying`, `maint`, `doors`, `persons`, `lug_boot`, `safety`.
+- Backend (`app.py`) valida valores, arma un DataFrame y devuelve la predicción en JSON (`prediction` en español y `prediction_code` original).
+- Frontend (`templates/index.html` + `static/styles.css`) muestra el formulario con campos traducidos y consume `/predict` vía fetch.
+
+## Estructura de carpetas
+- `app.py` — API Flask y render de la UI.
+- `templates/index.html` — formulario de captura y lógica JS de envío.
+- `static/styles.css` — estilos del formulario.
+- `car+evaluation/` — dataset/modelo (`best_car_model_sprint3.pkl`, `best_car_model.pkl`).
+- `sprint2_preparacion.ipynb`, `sprint3_modelamiento.ipynb` — notebooks de preparación y modelado.
+- `requirements.txt` — dependencias de Python.
+- `render.yaml` — configuración de despliegue para Render.
 
 ## Ejecutar local
 ```bash
 pip install -r requirements.txt
 python app.py
 ```
-Abre `http://localhost:5000` y usa el formulario o prueba con Thunder Client / Postman.
+Abre `http://localhost:5000` para usar la UI o envía un POST a `/predict`.
 
-## API
-- `GET /`: UI.
-- `POST /predict`: JSON o form-data con las 6 features del dataset (los valores siguen el dataset original en inglés):
-  - `buying`: vhigh | high | med | low (precio de compra: muy alto, alto, medio, bajo)
-  - `maint`: vhigh | high | med | low (costo de mantenimiento)
-  - `doors`: 2 | 3 | 4 | 5more
-  - `persons`: 2 | 4 | more
-  - `lug_boot`: small | med | big (tamaño de cajuela)
-  - `safety`: low | med | high
-
-Ejemplo body:
+### Ejemplo de petición
 ```json
 {
   "buying": "low",
@@ -38,7 +35,6 @@ Ejemplo body:
   "safety": "high"
 }
 ```
-
 Respuesta:
 ```json
 {
@@ -47,6 +43,5 @@ Respuesta:
 }
 ```
 
-## Notas
-- El modelo se carga desde `car+evaluation/`; si falta, re-ejecuta `sprint3_modelamiento.ipynb` para regenerarlo.
-- Se eliminó el modelo duplicado en la raíz; mantén los `.pkl` dentro de `car+evaluation/`.
+## Despliegue (Render)
+Render ejecuta `pip install -r requirements.txt` y arranca con `gunicorn app:app` según `render.yaml`. Ajusta variables o nombre del servicio ahí si lo necesitas.***
